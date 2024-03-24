@@ -5,11 +5,30 @@ import (
 	"fmt"
 	"log"
 	"superindo-product-api/config"
+	"superindo-product-api/features/models"
 	"superindo-product-api/features/products"
+	"time"
 
 	"github.com/gofiber/fiber/v2"
 	_ "github.com/lib/pq"
 )
+
+func seedProducts(db *sql.DB) error {
+    products := []models.Product{
+        {Name: "Product 1", Type: "Type A", Price: 19.99, CreatedAt: time.Now()},
+        {Name: "Product 2", Type: "Type B", Price: 29.99, CreatedAt: time.Now()},
+        {Name: "Product 3", Type: "Type C", Price: 39.99, CreatedAt: time.Now()},
+    }
+
+    for _, p := range products {
+        _, err := db.Exec("INSERT INTO products (name, type, price, created_at) VALUES ($1, $2, $3, $4)", p.Name, p.Type, p.Price, p.CreatedAt)
+        if err != nil {
+            return err
+        }
+    }
+
+    return nil
+}
 
 func main() {
 	cfg := config.Config{
@@ -34,6 +53,10 @@ func main() {
 	if err := db.Ping(); err != nil {
 		log.Fatalf("Failed to ping database: %v", err)
 	}
+
+	if err := seedProducts(db); err != nil {
+        log.Fatal("Failed to seed products table:", err)
+    }
 
 	app := fiber.New()
 
