@@ -31,7 +31,7 @@ You can create the necessary tables by running the SQL migrations provided in th
 
 ## Running the Application
 
-To start the application, run the following command:
+To start the application, run the following command: go run main.go
 
 
 
@@ -47,15 +47,3 @@ The application will start on port 3000 by default. You can access the API endpo
 - `GET /api/products/sort/:field`: Sort products by a specific field.
 
 Refer to the API documentation or code comments for detailed information on request and response formats.
-
-## Development
-
-For development purposes, you can run the application using:
-
-
-This command will start the application without building it first.
-
-## Testing
-
-Unit tests can be found in the `tests` directory. You can run the tests using:
-
