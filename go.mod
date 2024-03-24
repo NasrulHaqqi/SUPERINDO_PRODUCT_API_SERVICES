@@ -1,0 +1,3 @@
+module superindo-product-api
+
+go 1.20
