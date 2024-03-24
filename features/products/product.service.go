@@ -74,28 +74,18 @@ func (s *ProductService) GetProductByID(id int) (*models.Product, error) {
 	return &p, nil
 }
 
-func (s *ProductService) SearchProduct(query string) ([]models.Product, error) {
-	query = "SELECT id, name, type, price, created_at FROM products WHERE name ILIKE '%' || $1 || '%'"
-	rows, err := s.db.Query(query, query)
+func (s *ProductService) GetProductByName(name string) (*models.Product, error) {
+	query := "SELECT id, name, type, price, created_at FROM products WHERE name = $1"
+	row := s.db.QueryRow(query, name)
+	var p models.Product
+	err := row.Scan(&p.ID, &p.Name, &p.Type, &p.Price, &p.CreatedAt)
 	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-
-	var products []models.Product
-	for rows.Next() {
-		var p models.Product
-		if err := rows.Scan(&p.ID, &p.Name, &p.Type, &p.Price, &p.CreatedAt); err != nil {
-			return nil, err
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, errors.New("product not found")
 		}
-		products = append(products, p)
-	}
-
-	if err := rows.Err(); err != nil {
 		return nil, err
 	}
-
-	return products, nil
+	return &p, nil
 }
 
 func (s *ProductService) FilterProductByType(productType string) ([]models.Product, error) {
@@ -123,37 +113,38 @@ func (s *ProductService) FilterProductByType(productType string) ([]models.Produ
 }
 
 func (s *ProductService) SortProductsBy(field string) ([]models.Product, error) {
-	var orderBy string
-	switch field {
-	case "date":
-		orderBy = "created_at"
-	case "price":
-		orderBy = "price"
-	case "name":
-		orderBy = "name"
-	default:
-		return nil, fmt.Errorf("unsupported field for sorting: %s", field)
-	}
+    var orderBy string
+    switch field {
+    case "date":
+        orderBy = "created_at"
+    case "price":
+        orderBy = "price"
+    case "name":
+        orderBy = "name"
+    default:
+        return nil, fmt.Errorf("unsupported field for sorting: %s", field)
+    }
 
-	query := fmt.Sprintf("SELECT id, name, type, price, created_at FROM products ORDER BY %s", orderBy)
-	rows, err := s.db.Query(query)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
+    query := fmt.Sprintf("SELECT id, name, type, price, created_at FROM products ORDER BY %s", orderBy)
 
-	var products []models.Product
-	for rows.Next() {
-		var p models.Product
-		if err := rows.Scan(&p.ID, &p.Name, &p.Type, &p.Price, &p.CreatedAt); err != nil {
-			return nil, err
-		}
-		products = append(products, p)
-	}
+    rows, err := s.db.Query(query)
+    if err != nil {
+        return nil, err
+    }
+    defer rows.Close()
 
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
+    var products []models.Product
+    for rows.Next() {
+        var p models.Product
+        if err := rows.Scan(&p.ID, &p.Name, &p.Type, &p.Price, &p.CreatedAt); err != nil {
+            return nil, err
+        }
+        products = append(products, p)
+    }
 
-	return products, nil
+    if err := rows.Err(); err != nil {
+        return nil, err
+    }
+
+    return products, nil
 }

@@ -42,6 +42,7 @@ The application will start on port 3000 by default. You can access the API endpo
 - `POST /api/products`: Add a new product.
 - `GET /api/products`: Get all products.
 - `GET /api/products/:id`: Get product by ID.
+- `POST /api/products/:name`: Get product by Name.
 - `GET /api/products/search`: Search for products.
 - `GET /api/products/type/:type`: Filter products by type.
 - `GET /api/products/sort/:field`: Sort products by a specific field.

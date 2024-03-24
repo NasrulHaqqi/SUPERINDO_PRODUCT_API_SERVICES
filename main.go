@@ -69,7 +69,7 @@ func main() {
 	app.Post("/api/products", productController.AddProduct)
 	app.Get("/api/products", productController.GetAllProducts)
 	app.Get("/api/products/:id", productController.GetProductByID)
-	app.Get("/api/products/search", productController.SearchProduct)
+	app.Post("/api/products/:name", productController.GetProductByName)
 	app.Get("/api/products/type/:type", productController.FilterProductByType)
 	app.Get("/api/products/sort/:field", productController.SortProductsBy)
 

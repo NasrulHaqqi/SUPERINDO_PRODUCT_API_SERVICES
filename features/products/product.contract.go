@@ -47,7 +47,7 @@ type Service interface {
     AddProduct(product *models.Product) error
     GetAllProducts() ([]models.Product, error)
     GetProductByID(id int) (*models.Product, error)
-    SearchProduct(query string) ([]models.Product, error)
+    GetProductByName(name string) (*models.Product, error)
     FilterProductByType(productType string) ([]models.Product, error)
     SortProductsBy(field string) ([]models.Product, error)
 }
@@ -56,7 +56,7 @@ type Controller interface {
     AddProduct(ctx *fiber.Ctx) error
     GetAllProducts(ctx *fiber.Ctx) error
     GetProductByID(ctx *fiber.Ctx) error
-    SearchProduct(ctx *fiber.Ctx) error
+    GetProductByName(ctx *fiber.Ctx) error
     FilterProductByType(ctx *fiber.Ctx) error
     SortProductsBy(ctx *fiber.Ctx) error
 }

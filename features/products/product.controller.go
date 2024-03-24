@@ -61,29 +61,25 @@ func (controller *ProductController) GetProductByID(ctx *fiber.Ctx) error {
 	return ctx.JSON(product)
 }
 
-func (controller *ProductController) SearchProduct(ctx *fiber.Ctx) error {
-	query := ctx.Query("name")
+func (controller *ProductController) GetProductByName(ctx *fiber.Ctx) error {
+	var requestData struct {
+        Name string `json:"name"`
+    }
 
-    if query == "" {
+	if err := ctx.BodyParser(&requestData); err != nil {
         return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-            "error": "Query parameter 'q' is required",
+            "error": "Invalid request format",
         })
     }
 
-    products, err := controller.Service.SearchProduct(query)
+    product, err := controller.Service.GetProductByName(requestData.Name)
     if err != nil {
-        return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-            "error": "Failed to search products",
-        })
-    }
-
-    if len(products) == 0 {
         return ctx.Status(fiber.StatusNotFound).JSON(fiber.Map{
-            "message": "No products found for the given query",
+            "error": "Product not found",
         })
     }
 
-    return ctx.JSON(products)
+	return ctx.JSON(product)
 }
 
 func (controller *ProductController) FilterProductByType(ctx *fiber.Ctx) error {
@@ -100,7 +96,7 @@ func (controller *ProductController) FilterProductByType(ctx *fiber.Ctx) error {
 }
 
 func (controller *ProductController) SortProductsBy(ctx *fiber.Ctx) error {
-	field := ctx.Query("field")
+    field := ctx.Params("field")
 
     if field == "" {
         return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
